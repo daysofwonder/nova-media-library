@@ -19,6 +19,7 @@ class Upload {
 
 	private $config;
 	private $file;
+	private $stream;
 	private $extension;
 	private $bytes = 0;
 
@@ -108,10 +109,12 @@ class Upload {
 		if (
 			Helper::storage()->put(
 				Helper::folder($this->folder . $this->name),
-				$this->file,
+				$this->stream,
 				Helper::visibility($this->private)
 			)
 		) {
+		    fclose($this->stream);
+		    $this->stream = null;
 			return Model::create([
 				'title' => $this->title,
 				'created' => now(),
@@ -131,7 +134,7 @@ class Upload {
 	private function byDefault()
 	{
 		$this->bytes = $this->file->getSize();
-		$this->file = file_get_contents($this->file);
+		$this->stream = fopen($this->file, 'r+');
 	}
 
 	private function byResize()
@@ -157,7 +160,7 @@ class Upload {
 			$data = $image->resize($this->resize['width'], $this->resize['height'], function ($constraint) {
 				if ( !$this->resize['width'] or !$this->resize['height'] ) $constraint->aspectRatio();
 				if ( true !== $this->resize['upSize'] ) $constraint->upsize();
-			})->stream(null, data_get($this->config, 'resize.quality'))->__toString();
+			})->stream(null, data_get($this->config, 'resize.quality'));
 
 			$this->bytes = strlen($data);
 			$this->file = $data;
