@@ -65,7 +65,7 @@ class Helper {
 
 	static function visibility($bool)
 	{
-		return $bool ? 'private' : 'public';
+		return config('nova-media-library.acl') ?? ($bool ? 'private' : 'public');
 	}
 
 	static function preview($item, $size)

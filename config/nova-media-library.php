@@ -37,6 +37,16 @@ return [
 	'private' => false,
 
 	/**
+	 * Force the storage ACL (`private` or `public`) regardless of the `private` flag.
+	 * Use `private` when files are served by a CDN and the bucket blocks public ACLs.
+	 * `null` keeps the ACL in sync with the `private` flag.
+	 *
+	 * @var string|null
+	 */
+
+	'acl' => null,
+
+	/**
 	 * Store all files in a separate folder of storage
 	 *
 	 * @var string
